@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { providerFactory } from "../lib/provider-factory";
-import { useLlava } from "@/hooks/use-llava";
 import { useKeys } from "./keys-provider";
 import { addBackground } from "@/lib/utils";
+import { useLlamaVision } from "@/hooks/use-llama-vision";
 
 const TIMER_GUESS_TICK = 2_000;
 
@@ -20,7 +20,7 @@ const [LetMeGuessProvider, useLetMeGuess] = providerFactory(() => {
 	const [lastSpeed, setLastSpeed] = useState<number>(0);
 	const [lastSubmit, setLastSubmit] = useState<number>(0);
 	const { groqApiKey } = keys;
-	const { callLlava } = useLlava(groqApiKey);
+	const { callLlamaVision } = useLlamaVision(groqApiKey);
 	const prompt = visionPrompt;
 
 	async function submit() {
@@ -31,7 +31,10 @@ const [LetMeGuessProvider, useLetMeGuess] = providerFactory(() => {
 		setWorking(true);
 
 		setMessages([...messages, { role: "user", content: prompt }]);
-		const response = await callLlava(prompt, await addBackground(currentImage));
+		const response = await callLlamaVision(
+			prompt,
+			await addBackground(currentImage),
+		);
 
 		const { role, content } = response.choices[0].message;
 
